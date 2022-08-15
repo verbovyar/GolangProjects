@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+option go_package = "modules/pkg/gateAwayApiPb";
+
+import "google/apiProto/annotations.apiProto";
+
+service PlayersInfoGateAway {
+  rpc GetAll(GetAllRequest) returns (GetAllResponse) {
+    option (google.api.http) = {
+      get: "/players"
+    };
+  }
+  rpc Post(PostRequest) returns (PostResponse) {
+    option (google.api.http) = {
+      post: "/players"
+      body: "*"
+    };
+  }
+  rpc Put(PutRequest) returns (PutResponse) {
+    option (google.api.http) = {
+      put: "/players"
+      body: "*"
+    };
+  }
+  rpc Drop(DropRequest) returns (DropResponse) {
+    option (google.api.http) = {
+      delete: "/players"
+      body: "*"
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// List endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message GetAllRequest {}
+message GetAllResponse {
+  repeated Player players = 1;
+
+  message Player {
+    int32 id           = 1;
+    string name        = 2;
+    string club        = 3;
+    string nationality = 4;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message PostRequest {
+  string name        = 1;
+  string club        = 2;
+  string nationality = 3;
+}
+message PostResponse {
+ int32 id    = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message PutRequest {
+  int32 id           = 1;
+  string name        = 2;
+  string club        = 3;
+  string nationality = 4;
+}
+message PutResponse {
+  int32 id    = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Delete endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message DropRequest {
+  int32 id = 1;
+}
+message DropResponse {
+  bool result = 1;
+}
