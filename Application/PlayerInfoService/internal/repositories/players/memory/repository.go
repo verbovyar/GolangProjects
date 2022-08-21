@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/go-telegram-bot-api/telegram-bot-api/domain"
+	"github.com/go-telegram-bot-api/telegram-bot-api/internal/domain"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
 	"strconv"
 	"sync"

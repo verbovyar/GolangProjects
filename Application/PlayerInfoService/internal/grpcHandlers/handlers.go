@@ -3,7 +3,7 @@ package grpcHandlers
 import (
 	"context"
 	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
-	"github.com/go-telegram-bot-api/telegram-bot-api/domain"
+	"github.com/go-telegram-bot-api/telegram-bot-api/internal/domain"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
 	"google.golang.org/grpc"
 )

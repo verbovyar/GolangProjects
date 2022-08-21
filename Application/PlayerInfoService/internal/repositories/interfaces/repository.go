@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"github.com/go-telegram-bot-api/telegram-bot-api/domain"
+	"github.com/go-telegram-bot-api/telegram-bot-api/internal/domain"
 )
 
 //go:generate mockgen -source=repository.go -destination=mock/mock.go

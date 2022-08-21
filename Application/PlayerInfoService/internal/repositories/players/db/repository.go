@@ -3,23 +3,19 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/go-telegram-bot-api/telegram-bot-api/domain"
+	"github.com/go-telegram-bot-api/telegram-bot-api/internal/domain"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
-	"time"
+	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/postgres"
 )
 
-const maxAttempts = 10
-
-func New(client PoolInterface) *PlayersRepository {
+func New(client postgres.PoolInterface) *PlayersRepository {
 	return &PlayersRepository{
 		DbClient: client,
 	}
 }
 
 type PlayersRepository struct {
-	DbClient         PoolInterface
+	DbClient         postgres.PoolInterface
 	playersInterface interfaces.Repository
 }
 
@@ -122,50 +118,4 @@ func (r *PlayersRepository) Delete(id uint) error {
 	}
 
 	return nil
-}
-
-// GetConnectionPool ------------------------------------------
-func GetConnectionPool(connectionString string) *pgxpool.Pool {
-	ctx := context.Background()
-	connectionPool, _ := NewClient(ctx, maxAttempts, connectionString)
-
-	return connectionPool
-}
-
-type PoolInterface interface {
-	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
-	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
-	Close()
-}
-
-func NewClient(ctx context.Context, maxAttempts int, connectionString string) (connectionPool *pgxpool.Pool, err error) {
-	err = DoWithTries(func() error {
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		defer cancel()
-
-		connectionPool, err = pgxpool.Connect(ctx, connectionString)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}, maxAttempts, 5*time.Second)
-	if err != nil {
-		return nil, err
-	}
-
-	return connectionPool, nil
-}
-
-func DoWithTries(fn func() error, attempts int, delay time.Duration) (err error) {
-	for attempts > 0 {
-		if err = fn(); err != nil {
-			time.Sleep(delay)
-			attempts--
-
-			continue
-		}
-		return nil
-	}
-	return err
 }
