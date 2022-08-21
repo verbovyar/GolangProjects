@@ -16,12 +16,12 @@ import (
 )
 
 func main() {
-	config, err := config.LoadConfig("./config")
+	config, err := config.LoadConfig("././config")
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
 
-	fmt.Println("Started main")
+	fmt.Println("Started cmd")
 
 	connect, err := grpc.Dial(config.PlayerInfoServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

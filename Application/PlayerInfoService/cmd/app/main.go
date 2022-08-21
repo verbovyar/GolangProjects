@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	config, err := config.LoadConfig("./config")
+	config, err := config.LoadConfig("././config")
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
@@ -28,7 +28,7 @@ func main() {
 }
 
 func runBot(apiKey string) {
-	log.Println("start main")
+	log.Println("start cmd")
 	bot, err := botService.Init(apiKey)
 	if err != nil {
 		log.Panic(err)
