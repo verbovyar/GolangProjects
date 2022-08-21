@@ -14,8 +14,8 @@ import (
 )
 
 func Run(config config.Config) {
-	pool := postgres.GetConnectionPool(config.ConnectionString)
-	playersRepo := repo.New(pool)
+	p := postgres.New(config.ConnectionString)
+	playersRepo := repo.New(p.Pool)
 
 	botService.New(playersRepo)
 	go runBot(config.ApiKey)

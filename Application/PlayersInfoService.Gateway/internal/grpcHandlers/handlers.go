@@ -6,10 +6,10 @@ import (
 	"github.com/gogo/status"
 	"google.golang.org/grpc/codes"
 	"modules/api/gateAwayApiPb"
-	"modules/infrastructure/playersInfoServiceClient/api/pbGoFiles"
+	pbGoFiles2 "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 )
 
-func New(client pbGoFiles.PlayersServiceClient) *Handlers {
+func New(client pbGoFiles2.PlayersServiceClient) *Handlers {
 	return &Handlers{
 		client: client,
 	}
@@ -17,11 +17,11 @@ func New(client pbGoFiles.PlayersServiceClient) *Handlers {
 
 type Handlers struct {
 	gateAwayApiPb.UnsafePlayersInfoGateAwayServer
-	client pbGoFiles.PlayersServiceClient
+	client pbGoFiles2.PlayersServiceClient
 }
 
 func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) (*gateAwayApiPb.GetAllResponse, error) {
-	listRequest := pbGoFiles.ListRequest{}
+	listRequest := pbGoFiles2.ListRequest{}
 
 	response, err := h.client.List(ctx, &listRequest)
 	if err != nil {
@@ -49,7 +49,7 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	addRequest := pbGoFiles.AddRequest{
+	addRequest := pbGoFiles2.AddRequest{
 		Name:        in.Name,
 		Club:        in.Club,
 		Nationality: in.Nationality,
@@ -72,7 +72,7 @@ func (h *Handlers) Put(ctx context.Context, in *gateAwayApiPb.PutRequest) (*gate
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	updateRequest := pbGoFiles.UpdateRequest{
+	updateRequest := pbGoFiles2.UpdateRequest{
 		Name:        in.Name,
 		Club:        in.Club,
 		Nationality: in.Nationality,
@@ -95,7 +95,7 @@ func (h *Handlers) Drop(ctx context.Context, in *gateAwayApiPb.DropRequest) (*ga
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	deleteRequest := pbGoFiles.DeleteRequest{Id: in.Id}
+	deleteRequest := pbGoFiles2.DeleteRequest{Id: in.Id}
 
 	response, err := h.client.Delete(ctx, &deleteRequest)
 	if err != nil {

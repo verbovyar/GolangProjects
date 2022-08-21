@@ -23,7 +23,7 @@ func setUp(t *testing.T) Fixture {
 	}
 
 	playerRepo := PlayersRepository{
-		DbClient: pool,
+		Pool: pool,
 	}
 	return Fixture{
 		repository: &playerRepo,

@@ -8,8 +8,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"modules/api/gateAwayApiPb"
 	"modules/config"
-	pb "modules/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/internal/grpcHandlers"
+	pb "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"net"
 	"net/http"
 )
