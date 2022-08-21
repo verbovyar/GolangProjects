@@ -4,6 +4,8 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/domain"
 )
 
+//go:generate mockgen -source=repository.go -destination=mock/mock.go
+
 type Repository interface {
 	Add(player *domain.Player) error
 	List() []*domain.Player

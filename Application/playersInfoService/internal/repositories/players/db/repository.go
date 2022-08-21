@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api/domain"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
-	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"time"
@@ -13,16 +12,14 @@ import (
 
 const maxAttempts = 10
 
-//var Repository *PlayersRepository
-
-func New(connectionString string) *PlayersRepository {
+func New(client PoolInterface) *PlayersRepository {
 	return &PlayersRepository{
-		DbClient: GetConnectionPool(connectionString),
+		DbClient: client,
 	}
 }
 
 type PlayersRepository struct {
-	DbClient         DatabaseClient
+	DbClient         PoolInterface
 	playersInterface interfaces.Repository
 }
 
@@ -35,7 +32,7 @@ func (r *PlayersRepository) Add(player *domain.Player) error {
 	query := `SELECT clubId FROM clubs WHERE clubName = $1`
 	err := r.DbClient.QueryRow(ctx, query, player.Club).Scan(&clubId)
 	if err != nil {
-		fmt.Printf("list error %v\n", err)
+		fmt.Printf(" error %v\n", err)
 		return err
 	}
 
@@ -64,29 +61,28 @@ func (r *PlayersRepository) Add(player *domain.Player) error {
 func (r *PlayersRepository) List() []*domain.Player {
 	ctx := context.Background()
 
-	query := `SELECT id, name, clubName, nationalityName FROM Players
-			JOIN Clubs ON Players.club_id = Clubs.clubId
-			JOIN Nationalities ON Nationalities.nationalityId = Players.nationality_id`
+	query := "SELECT id, name, clubName, nationalityName FROM Players JOIN Clubs ON Players.club_id = Clubs.clubId JOIN Nationalities ON Nationalities.nationalityId = Players.nationality_id"
 
 	rows, err := r.DbClient.Query(ctx, query)
 	if err != nil {
 		fmt.Printf("list error %v\n", err)
 	}
 
-	list := make([]*domain.Player, 0)
+	players := make([]*domain.Player, 0)
 
 	for rows.Next() {
 		tempPlayer := domain.Player{}
 		err = rows.Scan(&tempPlayer.Id, &tempPlayer.Name, &tempPlayer.Club, &tempPlayer.Nationality)
 
-		list = append(list, &tempPlayer)
+		players = append(players, &tempPlayer)
 	}
 
-	return list
+	rows.Close()
+
+	return players
 }
 
 func (r *PlayersRepository) Update(player *domain.Player, id uint) error {
-
 	ctx := context.Background()
 
 	var clubId int
@@ -136,11 +132,10 @@ func GetConnectionPool(connectionString string) *pgxpool.Pool {
 	return connectionPool
 }
 
-type DatabaseClient interface {
-	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+type PoolInterface interface {
 	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
 	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
-	Begin(ctx context.Context) (pgx.Tx, error)
+	Close()
 }
 
 func NewClient(ctx context.Context, maxAttempts int, connectionString string) (connectionPool *pgxpool.Pool, err error) {

@@ -5,6 +5,7 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/domain"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
 	pb "github.com/go-telegram-bot-api/telegram-bot-api/pkg/apiPb"
+	"google.golang.org/grpc"
 )
 
 func New(repository interfaces.Repository) *Handlers {
@@ -78,4 +79,12 @@ func (s *Handlers) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.Delete
 	response := pb.DeleteResponse{Result: true}
 
 	return &response, nil
+}
+
+//go:generate mockgen -source=handlers.go -destination=mock/mock.go
+type PlayersServiceClient interface {
+	List(ctx context.Context, in *pb.ListRequest, opts ...grpc.CallOption) (*pb.ListResponse, error)
+	Add(ctx context.Context, in *pb.AddRequest, opts ...grpc.CallOption) (*pb.AddResponse, error)
+	Update(ctx context.Context, in *pb.UpdateRequest, opts ...grpc.CallOption) (*pb.UpdateResponse, error)
+	Delete(ctx context.Context, in *pb.DeleteRequest, opts ...grpc.CallOption) (*pb.DeleteResponse, error)
 }

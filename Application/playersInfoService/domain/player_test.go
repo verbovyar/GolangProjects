@@ -6,7 +6,7 @@ import (
 )
 
 type playerDataTest struct {
-	errorName string
+	testName string
 
 	name        string
 	club        string
@@ -28,31 +28,79 @@ func TestCreateNewPlayerError(t *testing.T) {
 	var cases [3]playerDataTest
 
 	cases[0] = playerDataTest{
-		errorName: "name bad argument",
+		testName: "bad name",
 
 		name:        "Verbovvvvvvvvvvvvvvvvvvvvvvvvvvvvv",
 		club:        "Barcelona",
 		nationality: "Russian",
 	}
 	cases[1] = playerDataTest{
-		errorName: "club bad argument",
+		testName: "bad club",
 
 		name:        "Verbov",
 		club:        "Barcelonaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 		nationality: "Russian",
 	}
 	cases[2] = playerDataTest{
-		errorName: "nationality bad argument",
+		testName: "bad nationality",
 
 		name:        "Verbov",
 		club:        "Barcelona",
 		nationality: "",
 	}
 
-	for _, tCases := range cases {
-		t.Run(tCases.errorName, func(t *testing.T) {
-			_, err := NewPlayer(tCases.name, tCases.club, tCases.nationality)
-			require.NoError(t, err)
+	for _, testCases := range cases {
+		t.Run(testCases.testName, func(t *testing.T) {
+			_, err := NewPlayer(testCases.name, testCases.club, testCases.nationality)
+			require.ErrorContains(t, err, testCases.testName)
 		})
 	}
+}
+
+func TestPlayer_GetName(t *testing.T) {
+	player := Player{
+		Name:        "Verbov",
+		Club:        "Barcelona",
+		Nationality: "Russian",
+		Id:          12,
+	}
+
+	name := player.GetName()
+	require.Equal(t, player.Name, name)
+}
+
+func TestPlayer_GetClub(t *testing.T) {
+	player := Player{
+		Name:        "Verbov",
+		Club:        "Barcelona",
+		Nationality: "Russian",
+		Id:          12,
+	}
+
+	club := player.GetClub()
+	require.Equal(t, player.Club, club)
+}
+
+func TestPlayer_GetNationality(t *testing.T) {
+	player := Player{
+		Name:        "Verbov",
+		Club:        "Barcelona",
+		Nationality: "Russian",
+		Id:          12,
+	}
+
+	nationality := player.GetNationality()
+	require.Equal(t, player.Nationality, nationality)
+}
+
+func TestPlayer_GetId(t *testing.T) {
+	player := Player{
+		Name:        "Verbov",
+		Club:        "Barcelona",
+		Nationality: "Russian",
+		Id:          12,
+	}
+
+	id := player.GetId()
+	require.Equal(t, player.Id, id)
 }

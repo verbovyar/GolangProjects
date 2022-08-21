@@ -17,7 +17,6 @@ func New(client pb.PlayersServiceClient) *Handlers {
 
 type Handlers struct {
 	api.UnsafePlayersInfoGateAwayServer
-
 	client pb.PlayersServiceClient
 }
 

@@ -18,7 +18,8 @@ func main() {
 		log.Fatalf("%v", err)
 	}
 
-	playersRepo := repo.New(config.ConnectionString)
+	pool := repo.GetConnectionPool(config.ConnectionString)
+	playersRepo := repo.New(pool)
 
 	botService.New(playersRepo)
 	go runBot(config.ApiKey)
