@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        (unknown)
-// source: playersInfoGateAwayService.api
+// source: PlayersInfoService.Gateway.api
 
 package gateAwayApiPb
 

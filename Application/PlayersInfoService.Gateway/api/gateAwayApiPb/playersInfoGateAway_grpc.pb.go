@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             (unknown)
-// source: playersInfoGateAwayService.api
+// source: PlayersInfoService.Gateway.api
 
 package gateAwayApiPb
 
@@ -209,5 +209,5 @@ var PlayersInfoGateAway_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "playersInfoGateAwayService.api",
+	Metadata: "PlayersInfoService.Gateway.api",
 }
