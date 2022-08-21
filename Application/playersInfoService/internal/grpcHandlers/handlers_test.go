@@ -2,8 +2,8 @@ package grpcHandlers
 
 import (
 	"context"
+	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
 	mock_grpcHandlers "github.com/go-telegram-bot-api/telegram-bot-api/internal/grpcHandlers/mock"
-	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/apiPb"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"testing"

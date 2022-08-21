@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+option go_package = "github.com/go-telegram-bot-grpcHandlers/telegram-bot-grpcHandlers/pkg/api";
+
+import "google/api/annotations.api";
+
+service PlayersService {
+  rpc List(ListRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/players"
+    };
+  }
+  rpc Add(AddRequest) returns (AddResponse) {
+    option (google.api.http) = {
+      post: "/players"
+      body: "*"
+    };
+  }
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+    option (google.api.http) = {
+      put: "/players"
+      body: "*"
+    };
+  }
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      delete: "/players"
+      body: "*"
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// List endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message ListRequest {}
+message ListResponse {
+  repeated Player players = 1;
+
+  message Player {
+    int32 id           = 1;
+    string name        = 2;
+    string club        = 3;
+    string nationality = 4;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message AddRequest {
+  string name        = 1;
+  string club        = 2;
+  string nationality = 3;
+}
+message AddResponse {
+ int32 id    = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message UpdateRequest {
+  int32 id           = 1;
+  string name        = 2;
+  string club        = 3;
+  string nationality = 4;
+}
+message UpdateResponse {
+  int32 id    = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Delete endpoint messages
+// ---------------------------------------------------------------------------------------------------------------------
+message DeleteRequest {
+  int32 id = 1;
+}
+message DeleteResponse {
+  bool result = 1;
+}

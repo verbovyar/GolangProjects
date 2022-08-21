@@ -7,9 +7,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
-	pb "modules/infrastructure/playersInfoServiceClient/pbGoFiles"
+	"modules/api/gateAwayApiPb"
+	pb "modules/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/internal/grpcHandlers"
-	api "modules/pkg/gateAwayApiPb"
 	"modules/pkg/utils"
 	"net"
 	"net/http"
@@ -43,7 +43,7 @@ func runGrpc(client pb.PlayersServiceClient, network, hostGrpcPort string) {
 	handlers := grpcHandlers.New(client)
 
 	grpcServer := grpc.NewServer()
-	api.RegisterPlayersInfoGateAwayServer(grpcServer, handlers)
+	gateAwayApiPb.RegisterPlayersInfoGateAwayServer(grpcServer, handlers)
 
 	err = grpcServer.Serve(listener)
 	if err != nil {
@@ -58,7 +58,7 @@ func runRest(hostGrpcPort, hostRestPort string) {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	if err := api.RegisterPlayersInfoGateAwayHandlerFromEndpoint(ctx, mux, hostGrpcPort, opts); err != nil {
+	if err := gateAwayApiPb.RegisterPlayersInfoGateAwayHandlerFromEndpoint(ctx, mux, hostGrpcPort, opts); err != nil {
 		panic(err)
 	}
 

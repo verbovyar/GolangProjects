@@ -5,7 +5,7 @@ package test
 
 import (
 	"context"
-	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/apiPb"
+	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
 	"github.com/magiconair/properties/assert"
 	"testing"
 )

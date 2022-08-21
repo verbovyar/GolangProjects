@@ -6,9 +6,9 @@ package mock_grpcHandlers
 
 import (
 	context "context"
+	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
 	reflect "reflect"
 
-	apiPb "github.com/go-telegram-bot-api/telegram-bot-api/pkg/apiPb"
 	gomock "github.com/golang/mock/gomock"
 	grpc "google.golang.org/grpc"
 )

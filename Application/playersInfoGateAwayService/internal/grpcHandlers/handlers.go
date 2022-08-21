@@ -5,51 +5,51 @@ import (
 	"fmt"
 	"github.com/gogo/status"
 	"google.golang.org/grpc/codes"
-	pb "modules/infrastructure/playersInfoServiceClient/pbGoFiles"
-	api "modules/pkg/gateAwayApiPb"
+	"modules/api/gateAwayApiPb"
+	"modules/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 )
 
-func New(client pb.PlayersServiceClient) *Handlers {
+func New(client pbGoFiles.PlayersServiceClient) *Handlers {
 	return &Handlers{
 		client: client,
 	}
 }
 
 type Handlers struct {
-	api.UnsafePlayersInfoGateAwayServer
-	client pb.PlayersServiceClient
+	gateAwayApiPb.UnsafePlayersInfoGateAwayServer
+	client pbGoFiles.PlayersServiceClient
 }
 
-func (h *Handlers) GetAll(ctx context.Context, in *api.GetAllRequest) (*api.GetAllResponse, error) {
-	listRequest := pb.ListRequest{}
+func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) (*gateAwayApiPb.GetAllResponse, error) {
+	listRequest := pbGoFiles.ListRequest{}
 
 	response, err := h.client.List(ctx, &listRequest)
 	if err != nil {
 		fmt.Printf("list request error %v", err)
 	}
 
-	playersDto := make([]*api.GetAllResponse_Player, len(response.Players))
+	playersDto := make([]*gateAwayApiPb.GetAllResponse_Player, len(response.Players))
 
 	for i, player := range response.Players {
-		playersDto[i] = &api.GetAllResponse_Player{
+		playersDto[i] = &gateAwayApiPb.GetAllResponse_Player{
 			Name:        player.Name,
 			Club:        player.Club,
 			Id:          player.Id,
 			Nationality: player.Nationality}
 	}
 
-	getAllResponse := api.GetAllResponse{Players: playersDto}
+	getAllResponse := gateAwayApiPb.GetAllResponse{Players: playersDto}
 
 	return &getAllResponse, nil
 }
 
-func (h *Handlers) Post(ctx context.Context, in *api.PostRequest) (*api.PostResponse, error) {
+func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*gateAwayApiPb.PostResponse, error) {
 	err := validateAddRequest(in.Name, in.Club, in.Nationality)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	addRequest := pb.AddRequest{
+	addRequest := pbGoFiles.AddRequest{
 		Name:        in.Name,
 		Club:        in.Club,
 		Nationality: in.Nationality,
@@ -60,19 +60,19 @@ func (h *Handlers) Post(ctx context.Context, in *api.PostRequest) (*api.PostResp
 		fmt.Printf("add erequest error %v", err)
 	}
 
-	postResponse := api.PostResponse{Id: response.Id}
+	postResponse := gateAwayApiPb.PostResponse{Id: response.Id}
 
 	return &postResponse, nil
 }
 
-func (h *Handlers) Put(ctx context.Context, in *api.PutRequest) (*api.PutResponse, error) {
+func (h *Handlers) Put(ctx context.Context, in *gateAwayApiPb.PutRequest) (*gateAwayApiPb.PutResponse, error) {
 
 	err := validateUpdateRequest(in.Name, in.Club, in.Nationality, in.Id)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	updateRequest := pb.UpdateRequest{
+	updateRequest := pbGoFiles.UpdateRequest{
 		Name:        in.Name,
 		Club:        in.Club,
 		Nationality: in.Nationality,
@@ -84,25 +84,25 @@ func (h *Handlers) Put(ctx context.Context, in *api.PutRequest) (*api.PutRespons
 		fmt.Printf("update request error %v", err)
 	}
 
-	putResponse := api.PutResponse{Id: response.Id}
+	putResponse := gateAwayApiPb.PutResponse{Id: response.Id}
 
 	return &putResponse, nil
 }
 
-func (h *Handlers) Drop(ctx context.Context, in *api.DropRequest) (*api.DropResponse, error) {
+func (h *Handlers) Drop(ctx context.Context, in *gateAwayApiPb.DropRequest) (*gateAwayApiPb.DropResponse, error) {
 	err := validateDeleteRequest(in.Id)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	deleteRequest := pb.DeleteRequest{Id: in.Id}
+	deleteRequest := pbGoFiles.DeleteRequest{Id: in.Id}
 
 	response, err := h.client.Delete(ctx, &deleteRequest)
 	if err != nil {
 		fmt.Printf("delete request error %v", err)
 	}
 
-	deleteResponse := api.DropResponse{Result: response.Result}
+	deleteResponse := gateAwayApiPb.DropResponse{Result: response.Result}
 
 	return &deleteResponse, nil
 }

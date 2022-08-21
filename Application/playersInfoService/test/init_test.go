@@ -4,7 +4,7 @@
 package test
 
 import (
-	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/apiPb"
+	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
 	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

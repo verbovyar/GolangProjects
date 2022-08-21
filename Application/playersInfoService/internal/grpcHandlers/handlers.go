@@ -2,9 +2,9 @@ package grpcHandlers
 
 import (
 	"context"
+	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
 	"github.com/go-telegram-bot-api/telegram-bot-api/domain"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
-	pb "github.com/go-telegram-bot-api/telegram-bot-api/pkg/apiPb"
 	"google.golang.org/grpc"
 )
 
@@ -15,29 +15,29 @@ func New(repository interfaces.Repository) *Handlers {
 }
 
 type Handlers struct {
-	pb.UnimplementedPlayersServiceServer
+	apiPb.UnimplementedPlayersServiceServer
 
 	repository interfaces.Repository
 }
 
-func (s *Handlers) List(ctx context.Context, in *pb.ListRequest) (*pb.ListResponse, error) {
+func (s *Handlers) List(ctx context.Context, in *apiPb.ListRequest) (*apiPb.ListResponse, error) {
 	players := s.repository.List()
-	playersDto := make([]*pb.ListResponse_Player, len(players))
+	playersDto := make([]*apiPb.ListResponse_Player, len(players))
 
 	for i, player := range players {
-		playersDto[i] = &pb.ListResponse_Player{
+		playersDto[i] = &apiPb.ListResponse_Player{
 			Name:        player.GetName(),
 			Club:        player.GetClub(),
 			Id:          int32(player.GetId()),
 			Nationality: player.GetNationality()}
 	}
 
-	response := pb.ListResponse{Players: playersDto}
+	response := apiPb.ListResponse{Players: playersDto}
 
 	return &response, nil
 }
 
-func (s *Handlers) Add(ctx context.Context, in *pb.AddRequest) (*pb.AddResponse, error) {
+func (s *Handlers) Add(ctx context.Context, in *apiPb.AddRequest) (*apiPb.AddResponse, error) {
 
 	player, err := domain.NewPlayer(in.Name, in.Club, in.Nationality)
 	if err != nil {
@@ -49,12 +49,12 @@ func (s *Handlers) Add(ctx context.Context, in *pb.AddRequest) (*pb.AddResponse,
 		return nil, err
 	}
 
-	response := pb.AddResponse{Id: int32(uint(player.Id))}
+	response := apiPb.AddResponse{Id: int32(uint(player.Id))}
 
 	return &response, nil
 }
 
-func (s *Handlers) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateResponse, error) {
+func (s *Handlers) Update(ctx context.Context, in *apiPb.UpdateRequest) (*apiPb.UpdateResponse, error) {
 	player, err := domain.NewPlayer(in.Name, in.Club, in.Nationality)
 	if err != nil {
 		return nil, err
@@ -65,26 +65,26 @@ func (s *Handlers) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.Update
 		return nil, err
 	}
 	player.Id = uint(in.Id)
-	response := pb.UpdateResponse{Id: int32(uint(player.Id))}
+	response := apiPb.UpdateResponse{Id: int32(uint(player.Id))}
 
 	return &response, nil
 }
 
-func (s *Handlers) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+func (s *Handlers) Delete(ctx context.Context, in *apiPb.DeleteRequest) (*apiPb.DeleteResponse, error) {
 	err := s.repository.Delete(uint(in.Id))
 	if err != nil {
 		return nil, err
 	}
 
-	response := pb.DeleteResponse{Result: true}
+	response := apiPb.DeleteResponse{Result: true}
 
 	return &response, nil
 }
 
 //go:generate mockgen -source=handlers.go -destination=mock/mock.go
 type PlayersServiceClient interface {
-	List(ctx context.Context, in *pb.ListRequest, opts ...grpc.CallOption) (*pb.ListResponse, error)
-	Add(ctx context.Context, in *pb.AddRequest, opts ...grpc.CallOption) (*pb.AddResponse, error)
-	Update(ctx context.Context, in *pb.UpdateRequest, opts ...grpc.CallOption) (*pb.UpdateResponse, error)
-	Delete(ctx context.Context, in *pb.DeleteRequest, opts ...grpc.CallOption) (*pb.DeleteResponse, error)
+	List(ctx context.Context, in *apiPb.ListRequest, opts ...grpc.CallOption) (*apiPb.ListResponse, error)
+	Add(ctx context.Context, in *apiPb.AddRequest, opts ...grpc.CallOption) (*apiPb.AddResponse, error)
+	Update(ctx context.Context, in *apiPb.UpdateRequest, opts ...grpc.CallOption) (*apiPb.UpdateResponse, error)
+	Delete(ctx context.Context, in *apiPb.DeleteRequest, opts ...grpc.CallOption) (*apiPb.DeleteResponse, error)
 }

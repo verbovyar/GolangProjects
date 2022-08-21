@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/botService"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/grpcHandlers"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
 	repo "github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/players/db"
-	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/apiPb"
 	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/utils"
 	"google.golang.org/grpc"
 	"log"
