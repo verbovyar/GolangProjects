@@ -2,18 +2,18 @@ package main
 
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
+	"github.com/go-telegram-bot-api/telegram-bot-api/config"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/botService"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/grpcHandlers"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
 	repo "github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/players/db"
-	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/utils"
 	"google.golang.org/grpc"
 	"log"
 	"net"
 )
 
 func main() {
-	config, err := utils.LoadConfig(".")
+	config, err := config.LoadConfig("./config")
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

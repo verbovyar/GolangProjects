@@ -8,15 +8,15 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"modules/api/gateAwayApiPb"
+	"modules/config"
 	pb "modules/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/internal/grpcHandlers"
-	"modules/pkg/utils"
 	"net"
 	"net/http"
 )
 
 func main() {
-	config, err := utils.LoadConfig(".")
+	config, err := config.LoadConfig("./config")
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
@@ -35,6 +35,7 @@ func main() {
 }
 
 func runGrpc(client pb.PlayersServiceClient, network, hostGrpcPort string) {
+	fmt.Println("Started grpc")
 	listener, err := net.Listen(network, hostGrpcPort)
 	if err != nil {
 		fmt.Printf("listen error %v\n", err)
@@ -52,6 +53,7 @@ func runGrpc(client pb.PlayersServiceClient, network, hostGrpcPort string) {
 }
 
 func runRest(hostGrpcPort, hostRestPort string) {
+	fmt.Println("Started rest")
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

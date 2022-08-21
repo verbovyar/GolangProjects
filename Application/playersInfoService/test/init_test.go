@@ -5,14 +5,14 @@ package test
 
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
-	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/utils"
+	"github.com/go-telegram-bot-api/telegram-bot-api/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
 )
 
 func NewClient() apiPb.PlayersServiceClient {
-	config, err := utils.LoadConfig(".")
+	config, err := config.LoadConfig(".")
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

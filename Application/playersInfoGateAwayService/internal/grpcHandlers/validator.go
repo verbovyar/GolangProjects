@@ -26,7 +26,7 @@ func validateName(name string) error {
 	nameSize := len(name)
 	for i := 0; i < nameSize; i++ {
 		if !unicode.IsLetter(rune(name[i])) {
-			return errors.New(clubError + "the string must contain only Latin letters")
+			return errors.New(nameError + "the string must contain only Latin letters")
 		}
 	}
 	if nameSize == 0 || nameSize > maxSize {
