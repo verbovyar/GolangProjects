@@ -1,4 +1,4 @@
-package grpcHandlers
+package handlers
 
 import (
 	"errors"

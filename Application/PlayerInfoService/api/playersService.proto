@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/go-telegram-bot-grpcHandlers/telegram-bot-grpcHandlers/pkg/api";
+option go_package = "github.com/go-telegram-bot-handlers/telegram-bot-handlers/pkg/api";
 
 import "google/api/annotations.api";
 

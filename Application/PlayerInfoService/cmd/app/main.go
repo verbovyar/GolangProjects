@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
-	config, err := config.LoadConfig("././config")
+	conf, err := config.LoadConfig("././config")
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
 
-	app.Run(config)
+	app.Run(conf)
 }

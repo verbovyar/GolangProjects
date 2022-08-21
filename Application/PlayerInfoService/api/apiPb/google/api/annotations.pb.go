@@ -16,7 +16,7 @@
 // versions:
 // 	protoc-gen-go v1.28.0
 // 	protoc        (unknown)
-// source: google/grpcHandlers/annotations.api
+// source: google/handlers/annotations.api
 
 package annotations
 
@@ -39,9 +39,9 @@ var file_google_api_annotations_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*descriptorpb.MethodOptions)(nil),
 		ExtensionType: (*HttpRule)(nil),
 		Field:         72295728,
-		Name:          "google.grpcHandlers.http",
+		Name:          "google.handlers.http",
 		Tag:           "bytes,72295728,opt,name=http",
-		Filename:      "google/grpcHandlers/annotations.api",
+		Filename:      "google/handlers/annotations.api",
 	},
 }
 
@@ -49,7 +49,7 @@ var file_google_api_annotations_proto_extTypes = []protoimpl.ExtensionInfo{
 var (
 	// See `HttpRule`.
 	//
-	// optional google.grpcHandlers.HttpRule http = 72295728;
+	// optional google.handlers.HttpRule http = 72295728;
 	E_Http = &file_google_api_annotations_proto_extTypes[0]
 )
 
@@ -79,11 +79,11 @@ var file_google_api_annotations_proto_rawDesc = []byte{
 
 var file_google_api_annotations_proto_goTypes = []interface{}{
 	(*descriptorpb.MethodOptions)(nil), // 0: google.protobuf.MethodOptions
-	(*HttpRule)(nil),                   // 1: google.grpcHandlers.HttpRule
+	(*HttpRule)(nil),                   // 1: google.handlers.HttpRule
 }
 var file_google_api_annotations_proto_depIdxs = []int32{
-	0, // 0: google.grpcHandlers.http:extendee -> google.protobuf.MethodOptions
-	1, // 1: google.grpcHandlers.http:type_name -> google.grpcHandlers.HttpRule
+	0, // 0: google.handlers.http:extendee -> google.protobuf.MethodOptions
+	1, // 1: google.handlers.http:type_name -> google.handlers.HttpRule
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	1, // [1:2] is the sub-list for extension type_name

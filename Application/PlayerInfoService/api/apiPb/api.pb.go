@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.0
 // 	protoc        (unknown)
-// source: grpcHandlers.api
+// source: handlers.api
 
 package apiPb
 

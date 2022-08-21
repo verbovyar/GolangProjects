@@ -4,7 +4,7 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
 	"github.com/go-telegram-bot-api/telegram-bot-api/config"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/botService"
-	"github.com/go-telegram-bot-api/telegram-bot-api/internal/grpcHandlers"
+	"github.com/go-telegram-bot-api/telegram-bot-api/internal/handlers"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
 	repo "github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/players/db"
 	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/postgres"
@@ -39,7 +39,7 @@ func runBot(apiKey string) {
 
 func runGRPCServer(repo interfaces.Repository, network string, hostGrpcPort string) {
 	grpcServer := grpc.NewServer()
-	handlers := grpcHandlers.New(repo)
+	handlers := handlers.New(repo)
 	apiPb.RegisterPlayersServiceServer(grpcServer, handlers)
 
 	listener, err := net.Listen(network, hostGrpcPort)

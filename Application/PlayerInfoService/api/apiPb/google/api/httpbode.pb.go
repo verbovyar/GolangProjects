@@ -16,7 +16,7 @@
 // versions:
 // 	protoc-gen-go v1.28.0
 // 	protoc        (unknown)
-// source: google/grpcHandlers/httpbody.api
+// source: google/handlers/httpbody.api
 
 package annotations
 
@@ -53,21 +53,21 @@ const (
 //       string request_id = 1;
 //
 //       // The raw HTTP body is bound to this field.
-//       google.grpcHandlers.HttpBody http_body = 2;
+//       google.handlers.HttpBody http_body = 2;
 //     }
 //
 //     service ResourceService {
-//       rpc GetResource(GetResourceRequest) returns (google.grpcHandlers.HttpBody);
-//       rpc UpdateResource(google.grpcHandlers.HttpBody) returns (google.protobuf.Empty);
+//       rpc GetResource(GetResourceRequest) returns (google.handlers.HttpBody);
+//       rpc UpdateResource(google.handlers.HttpBody) returns (google.protobuf.Empty);
 //     }
 //
 // Example with streaming methods:
 //
 //     service CaldavService {
-//       rpc GetCalendar(stream google.grpcHandlers.HttpBody)
-//         returns (stream google.grpcHandlers.HttpBody);
-//       rpc UpdateCalendar(stream google.grpcHandlers.HttpBody)
-//         returns (stream google.grpcHandlers.HttpBody);
+//       rpc GetCalendar(stream google.handlers.HttpBody)
+//         returns (stream google.handlers.HttpBody);
+//       rpc UpdateCalendar(stream google.handlers.HttpBody)
+//         returns (stream google.handlers.HttpBody);
 //     }
 //
 // Use of this type only changes how the request and response bodies are
@@ -162,7 +162,7 @@ func file_google_api_httpbode_proto_rawDescGZIP() []byte {
 
 var file_google_api_httpbode_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_google_api_httpbode_proto_goTypes = []interface{}{
-	(*HttpBody)(nil), // 0: google.grpcHandlers.HttpBody
+	(*HttpBody)(nil), // 0: google.handlers.HttpBody
 }
 var file_google_api_httpbode_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

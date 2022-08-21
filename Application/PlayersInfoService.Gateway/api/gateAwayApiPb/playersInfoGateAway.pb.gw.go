@@ -151,7 +151,7 @@ func local_request_PlayersInfoGateAway_Drop_0(ctx context.Context, marshaler run
 
 }
 
-// RegisterPlayersInfoGateAwayHandlerServer registers the http grpcHandlers for service PlayersInfoGateAway to "mux".
+// RegisterPlayersInfoGateAwayHandlerServer registers the http handlers for service PlayersInfoGateAway to "mux".
 // UnaryRPC     :call PlayersInfoGateAwayServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterPlayersInfoGateAwayHandlerFromEndpoint instead.
@@ -285,15 +285,15 @@ func RegisterPlayersInfoGateAwayHandlerFromEndpoint(ctx context.Context, mux *ru
 	return RegisterPlayersInfoGateAwayHandler(ctx, mux, conn)
 }
 
-// RegisterPlayersInfoGateAwayHandler registers the http grpcHandlers for service PlayersInfoGateAway to "mux".
-// The grpcHandlers forward requests to the grpc endpoint over "conn".
+// RegisterPlayersInfoGateAwayHandler registers the http handlers for service PlayersInfoGateAway to "mux".
+// The handlers forward requests to the grpc endpoint over "conn".
 func RegisterPlayersInfoGateAwayHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
 	return RegisterPlayersInfoGateAwayHandlerClient(ctx, mux, NewPlayersInfoGateAwayClient(conn))
 }
 
-// RegisterPlayersInfoGateAwayHandlerClient registers the http grpcHandlers for service PlayersInfoGateAway
-// to "mux". The grpcHandlers forward requests to the grpc endpoint over the given implementation of "PlayersInfoGateAwayClient".
-// Note: the gRPC framework executes interceptors within the gRPC grpcHandlers. If the passed in "PlayersInfoGateAwayClient"
+// RegisterPlayersInfoGateAwayHandlerClient registers the http handlers for service PlayersInfoGateAway
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "PlayersInfoGateAwayClient".
+// Note: the gRPC framework executes interceptors within the gRPC handlers. If the passed in "PlayersInfoGateAwayClient"
 // doesn't go through the normal gRPC flow (creating a gRPC transmitter etc.) then it will be up to the passed in
 // "PlayersInfoGateAwayClient" to call the correct interceptors.
 func RegisterPlayersInfoGateAwayHandlerClient(ctx context.Context, mux *runtime.ServeMux, client PlayersInfoGateAwayClient) error {

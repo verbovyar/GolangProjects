@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             (unknown)
-// source: grpcHandlers.api
+// source: handlers.api
 
 package apiPb
 
@@ -209,5 +209,5 @@ var PlayersService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "grpcHandlers.api",
+	Metadata: "handlers.api",
 }
