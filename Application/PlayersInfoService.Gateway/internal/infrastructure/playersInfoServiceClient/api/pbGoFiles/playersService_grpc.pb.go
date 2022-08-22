@@ -4,6 +4,7 @@
 // - protoc             (unknown)
 // source: playersService.api
 
+//go:generate mockgen -source=playersService_grpc.pb.go -destination=../../../../handlers/mock/mock.go
 package pbGoFiles
 
 import (

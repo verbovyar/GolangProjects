@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"modules/api/gateAwayApiPb"
 	pbGoFiles2 "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
+	"modules/internal/utils"
 )
 
 func New(client pbGoFiles2.PlayersServiceClient) *Handlers {
@@ -21,9 +22,9 @@ type Handlers struct {
 }
 
 func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) (*gateAwayApiPb.GetAllResponse, error) {
-	listRequest := pbGoFiles2.ListRequest{}
+	listRequest := &pbGoFiles2.ListRequest{}
 
-	response, err := h.client.List(ctx, &listRequest)
+	response, err := h.client.List(ctx, listRequest)
 	if err != nil {
 		fmt.Printf("list request error %v", err)
 	}
@@ -44,18 +45,18 @@ func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) 
 }
 
 func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*gateAwayApiPb.PostResponse, error) {
-	err := validateAddRequest(in.Name, in.Club, in.Nationality)
+	err := utils.ValidateAddRequest(in.Name, in.Club, in.Nationality)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	addRequest := pbGoFiles2.AddRequest{
+	addRequest := &pbGoFiles2.AddRequest{
 		Name:        in.Name,
 		Club:        in.Club,
 		Nationality: in.Nationality,
 	}
 
-	response, err := h.client.Add(ctx, &addRequest)
+	response, err := h.client.Add(ctx, addRequest)
 	if err != nil {
 		fmt.Printf("add erequest error %v", err)
 	}
@@ -67,19 +68,19 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 
 func (h *Handlers) Put(ctx context.Context, in *gateAwayApiPb.PutRequest) (*gateAwayApiPb.PutResponse, error) {
 
-	err := validateUpdateRequest(in.Name, in.Club, in.Nationality, in.Id)
+	err := utils.ValidateUpdateRequest(in.Name, in.Club, in.Nationality, in.Id)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	updateRequest := pbGoFiles2.UpdateRequest{
+	updateRequest := &pbGoFiles2.UpdateRequest{
 		Name:        in.Name,
 		Club:        in.Club,
 		Nationality: in.Nationality,
 		Id:          in.Id,
 	}
 
-	response, err := h.client.Update(ctx, &updateRequest)
+	response, err := h.client.Update(ctx, updateRequest)
 	if err != nil {
 		fmt.Printf("update request error %v", err)
 	}
@@ -90,14 +91,14 @@ func (h *Handlers) Put(ctx context.Context, in *gateAwayApiPb.PutRequest) (*gate
 }
 
 func (h *Handlers) Drop(ctx context.Context, in *gateAwayApiPb.DropRequest) (*gateAwayApiPb.DropResponse, error) {
-	err := validateDeleteRequest(in.Id)
+	err := utils.ValidateDeleteRequest(in.Id)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	deleteRequest := pbGoFiles2.DeleteRequest{Id: in.Id}
+	deleteRequest := &pbGoFiles2.DeleteRequest{Id: in.Id}
 
-	response, err := h.client.Delete(ctx, &deleteRequest)
+	response, err := h.client.Delete(ctx, deleteRequest)
 	if err != nil {
 		fmt.Printf("delete request error %v", err)
 	}

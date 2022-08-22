@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/gogo/status v1.1.1
+	github.com/golang/mock v1.4.4
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.2
 	github.com/spf13/viper v1.12.0
 	google.golang.org/genproto v0.0.0-20220805133916-01dd62135a58

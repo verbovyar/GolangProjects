@@ -2,7 +2,7 @@ package db
 
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
-	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/postgres"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/magiconair/properties/assert"
 	"github.com/pashagolub/pgxmock"
 	"github.com/stretchr/testify/require"
@@ -12,7 +12,7 @@ import (
 
 type Fixture struct {
 	repository interfaces.Repository
-	pool       postgres.PoolInterface
+	pool       pgxpool.Pool
 	mock       pgxmock.PgxPoolIface
 }
 

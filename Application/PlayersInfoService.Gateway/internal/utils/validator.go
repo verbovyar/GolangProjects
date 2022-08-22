@@ -1,4 +1,4 @@
-package handlers
+package utils
 
 import (
 	"errors"
@@ -73,7 +73,7 @@ func validateNationality(nationality string) error {
 	return nil
 }
 
-func validateUpdateRequest(name, club, nationality string, id int32) error {
+func ValidateUpdateRequest(name, club, nationality string, id int32) error {
 	err := validateId(id)
 	if err != nil {
 		return err
@@ -97,7 +97,7 @@ func validateUpdateRequest(name, club, nationality string, id int32) error {
 	return nil
 }
 
-func validateAddRequest(name, club, nationality string) error {
+func ValidateAddRequest(name, club, nationality string) error {
 	err := validateName(name)
 	if err != nil {
 		return err
@@ -116,7 +116,7 @@ func validateAddRequest(name, club, nationality string) error {
 	return nil
 }
 
-func validateDeleteRequest(id int32) error {
+func ValidateDeleteRequest(id int32) error {
 	err := validateId(id)
 	if err != nil {
 		return err
