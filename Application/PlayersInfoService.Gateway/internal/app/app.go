@@ -20,32 +20,8 @@ import (
 	"time"
 )
 
-var (
-	startTime = time.Now().UTC()
-)
-
-func goroutines() interface{} {
-	return r.NumGoroutine()
-}
-
-func cpu() interface{} {
-	return r.NumCPU()
-}
-
-func uptime() interface{} {
-	return int64(time.Since(startTime))
-}
-
 func Run(config config.Config) {
-	expvar.Publish("Goroutines", expvar.Func(goroutines))
-	expvar.Publish("Uptime", expvar.Func(uptime))
-	expvar.Publish("Cpu", expvar.Func(cpu))
-	go func() {
-		err := http.ListenAndServe(":8081", nil)
-		if err != nil {
-			panic(err)
-		}
-	}()
+	counter()
 
 	connect, err := grpc.Dial(config.PlayerInfoServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -72,6 +48,34 @@ func Run(config config.Config) {
 
 	go runRest(config.HostGrpcPort, config.HostRestPort, logger)
 	runGrpcServer(h, config.Network, config.HostGrpcPort, logger)
+}
+
+var (
+	startTime = time.Now().UTC()
+)
+
+func goroutines() interface{} {
+	return r.NumGoroutine()
+}
+
+func cpu() interface{} {
+	return r.NumCPU()
+}
+
+func uptime() interface{} {
+	return int64(time.Since(startTime))
+}
+
+func counter() {
+	expvar.Publish("Goroutines", expvar.Func(goroutines))
+	expvar.Publish("Uptime", expvar.Func(uptime))
+	expvar.Publish("Cpu", expvar.Func(cpu))
+	go func() {
+		err := http.ListenAndServe(":8081", nil)
+		if err != nil {
+			fmt.Print("counter error", err)
+		}
+	}()
 }
 
 func runGrpcServer(handlers *handlers.Handlers, network, hostGrpcPort string, logger logging.Logger) {
