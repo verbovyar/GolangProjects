@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"modules/pkg/logging"
 	"unicode"
 )
 
@@ -73,23 +74,27 @@ func validateNationality(nationality string) error {
 	return nil
 }
 
-func ValidateUpdateRequest(name, club, nationality string, id int32) error {
+func ValidateUpdateRequest(name, club, nationality string, id int32, logger logging.Logger) error {
 	err := validateId(id)
+	logger.Info("Validate id in update request")
 	if err != nil {
 		return err
 	}
 
 	err = validateName(name)
+	logger.Info("Validate name in update request")
 	if err != nil {
 		return err
 	}
 
 	err = validateClub(club)
+	logger.Info("Validate club in update request")
 	if err != nil {
 		return err
 	}
 
 	err = validateNationality(nationality)
+	logger.Info("Validate nationality in update request")
 	if err != nil {
 		return err
 	}
@@ -97,18 +102,21 @@ func ValidateUpdateRequest(name, club, nationality string, id int32) error {
 	return nil
 }
 
-func ValidateAddRequest(name, club, nationality string) error {
+func ValidateAddRequest(name, club, nationality string, logger logging.Logger) error {
 	err := validateName(name)
+	logger.Info("Validate name in add request")
 	if err != nil {
 		return err
 	}
 
 	err = validateClub(club)
+	logger.Info("Validate club in add request")
 	if err != nil {
 		return err
 	}
 
 	err = validateNationality(nationality)
+	logger.Info("Validate nationality in add request")
 	if err != nil {
 		return err
 	}
@@ -116,8 +124,9 @@ func ValidateAddRequest(name, club, nationality string) error {
 	return nil
 }
 
-func ValidateDeleteRequest(id int32) error {
+func ValidateDeleteRequest(id int32, logger logging.Logger) error {
 	err := validateId(id)
+	logger.Info("Validate id in update request")
 	if err != nil {
 		return err
 	}

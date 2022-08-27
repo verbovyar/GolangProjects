@@ -3,28 +3,36 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"github.com/Shopify/sarama"
 	"github.com/gogo/status"
 	"google.golang.org/grpc/codes"
 	"modules/api/gateAwayApiPb"
 	pbGoFiles2 "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/internal/utils"
+	"modules/pkg/logging"
 )
 
-func New(client pbGoFiles2.PlayersServiceClient) *Handlers {
+func New(client pbGoFiles2.PlayersServiceClient, producer sarama.SyncProducer, logger logging.Logger) *Handlers {
 	return &Handlers{
-		client: client,
+		client:   client,
+		producer: producer,
+		logger:   logger,
 	}
 }
 
 type Handlers struct {
 	gateAwayApiPb.UnsafePlayersInfoGateAwayServer
-	client pbGoFiles2.PlayersServiceClient
+	client   pbGoFiles2.PlayersServiceClient
+	producer sarama.SyncProducer
+	logger   logging.Logger
 }
 
 func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) (*gateAwayApiPb.GetAllResponse, error) {
 	listRequest := &pbGoFiles2.ListRequest{}
+	h.logger.Info("Create List request from players info service")
 
 	response, err := h.client.List(ctx, listRequest)
+	h.logger.Info("Get List response")
 	if err != nil {
 		fmt.Printf("list request error %v", err)
 	}
@@ -38,6 +46,7 @@ func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) 
 			Id:          player.Id,
 			Nationality: player.Nationality}
 	}
+	h.logger.Info("Overwriting data in GetAll response")
 
 	getAllResponse := gateAwayApiPb.GetAllResponse{Players: playersDto}
 
@@ -45,7 +54,8 @@ func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) 
 }
 
 func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*gateAwayApiPb.PostResponse, error) {
-	err := utils.ValidateAddRequest(in.Name, in.Club, in.Nationality)
+	err := utils.ValidateAddRequest(in.Name, in.Club, in.Nationality, h.logger)
+	h.logger.Info("Validate Add request data")
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
@@ -55,20 +65,35 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 		Club:        in.Club,
 		Nationality: in.Nationality,
 	}
+	h.logger.Info("Overwriting data in Add request")
 
 	response, err := h.client.Add(ctx, addRequest)
+	h.logger.Info("Get Add response")
 	if err != nil {
 		fmt.Printf("add erequest error %v", err)
 	}
 
+	//TODO
+	//msg := &sarama.ProducerMessage{
+	//	Topic:     "TestTopic",
+	//	Partition: -1,
+	//	Value:     sarama.StringEncoder("Test msg"),
+	//}
+	//_, _, err = h.producer.SendMessage(msg)
+	//if err != nil {
+	//	fmt.Printf("producer send msg error")
+	//}
+	//-----------------
+
 	postResponse := gateAwayApiPb.PostResponse{Id: response.Id}
+	h.logger.Info("Get Post response")
 
 	return &postResponse, nil
 }
 
 func (h *Handlers) Put(ctx context.Context, in *gateAwayApiPb.PutRequest) (*gateAwayApiPb.PutResponse, error) {
-
-	err := utils.ValidateUpdateRequest(in.Name, in.Club, in.Nationality, in.Id)
+	err := utils.ValidateUpdateRequest(in.Name, in.Club, in.Nationality, in.Id, h.logger)
+	h.logger.Info("Validate Update request data")
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
@@ -79,8 +104,10 @@ func (h *Handlers) Put(ctx context.Context, in *gateAwayApiPb.PutRequest) (*gate
 		Nationality: in.Nationality,
 		Id:          in.Id,
 	}
+	h.logger.Info("Overwriting data in Update request")
 
 	response, err := h.client.Update(ctx, updateRequest)
+	h.logger.Info("Get Update response")
 	if err != nil {
 		fmt.Printf("update request error %v", err)
 	}
@@ -91,14 +118,17 @@ func (h *Handlers) Put(ctx context.Context, in *gateAwayApiPb.PutRequest) (*gate
 }
 
 func (h *Handlers) Drop(ctx context.Context, in *gateAwayApiPb.DropRequest) (*gateAwayApiPb.DropResponse, error) {
-	err := utils.ValidateDeleteRequest(in.Id)
+	err := utils.ValidateDeleteRequest(in.Id, h.logger)
+	h.logger.Info("Validate Delete request data")
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	deleteRequest := &pbGoFiles2.DeleteRequest{Id: in.Id}
+	h.logger.Info("Overwriting data in Delete request")
 
 	response, err := h.client.Delete(ctx, deleteRequest)
+	h.logger.Info("Get Delete response")
 	if err != nil {
 		fmt.Printf("delete request error %v", err)
 	}
