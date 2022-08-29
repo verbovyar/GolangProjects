@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"context"
+	"expvar"
+	_ "expvar"
 	"fmt"
 	"github.com/Shopify/sarama"
 	"github.com/gogo/status"
@@ -10,6 +12,8 @@ import (
 	pbGoFiles2 "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/internal/utils"
 	"modules/pkg/logging"
+	"runtime"
+	"time"
 )
 
 func New(client pbGoFiles2.PlayersServiceClient, producer sarama.SyncProducer, logger logging.Logger) *Handlers {
@@ -21,10 +25,31 @@ func New(client pbGoFiles2.PlayersServiceClient, producer sarama.SyncProducer, l
 }
 
 type Handlers struct {
-	gateAwayApiPb.UnsafePlayersInfoGateAwayServer
+	gateAwayApiPb.UnimplementedPlayersInfoGateAwayServer
 	client   pbGoFiles2.PlayersServiceClient
 	producer sarama.SyncProducer
 	logger   logging.Logger
+}
+
+func (h *Handlers) Counters(context.Context, *gateAwayApiPb.CountersRequest) (*gateAwayApiPb.CountersResponse, error) {
+	goroutines := func() interface{} {
+		return runtime.NumGoroutine()
+	}
+
+	cpu := func() interface{} {
+		return runtime.NumCPU()
+	}
+
+	startTime := time.Now().UTC()
+	uptime := func() interface{} {
+		return int64(time.Since(startTime))
+	}
+
+	expvar.Publish("Goroutines", expvar.Func(goroutines))
+	expvar.Publish("Uptime", expvar.Func(uptime))
+	expvar.Publish("Cpu", expvar.Func(cpu))
+
+	return nil, nil
 }
 
 func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) (*gateAwayApiPb.GetAllResponse, error) {
@@ -74,16 +99,15 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 	}
 
 	//TODO
-	//msg := &sarama.ProducerMessage{
-	//	Topic:     "TestTopic",
-	//	Partition: -1,
-	//	Value:     sarama.StringEncoder("Test msg"),
-	//}
-	//_, _, err = h.producer.SendMessage(msg)
-	//if err != nil {
-	//	fmt.Printf("producer send msg error")
-	//}
-	//-----------------
+	msg := &sarama.ProducerMessage{
+		Topic:     "test2",
+		Partition: -1,
+		Value:     sarama.StringEncoder("Test msg"),
+	}
+	_, _, err = h.producer.SendMessage(msg)
+	if err != nil {
+		h.logger.Info("producer send msg error")
+	}
 
 	postResponse := gateAwayApiPb.PostResponse{Id: response.Id}
 	h.logger.Info("Get Post response")
