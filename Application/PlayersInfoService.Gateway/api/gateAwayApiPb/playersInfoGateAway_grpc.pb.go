@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             (unknown)
-// source: PlayersInfoService.Gateway.api
+// source: playersInfoGateAway.proto
 
 package gateAwayApiPb
 
@@ -18,7 +18,7 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// PlayersInfoGateAwayClient is the transmitter API for PlayersInfoGateAway service.
+// PlayersInfoGateAwayClient is the client API for PlayersInfoGateAway service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PlayersInfoGateAwayClient interface {
@@ -26,6 +26,7 @@ type PlayersInfoGateAwayClient interface {
 	Post(ctx context.Context, in *PostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	Put(ctx context.Context, in *PutRequest, opts ...grpc.CallOption) (*PutResponse, error)
 	Drop(ctx context.Context, in *DropRequest, opts ...grpc.CallOption) (*DropResponse, error)
+	Counters(ctx context.Context, in *CountersRequest, opts ...grpc.CallOption) (*CountersResponse, error)
 }
 
 type playersInfoGateAwayClient struct {
@@ -72,6 +73,15 @@ func (c *playersInfoGateAwayClient) Drop(ctx context.Context, in *DropRequest, o
 	return out, nil
 }
 
+func (c *playersInfoGateAwayClient) Counters(ctx context.Context, in *CountersRequest, opts ...grpc.CallOption) (*CountersResponse, error) {
+	out := new(CountersResponse)
+	err := c.cc.Invoke(ctx, "/PlayersInfoGateAway/Counters", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PlayersInfoGateAwayServer is the server API for PlayersInfoGateAway service.
 // All implementations must embed UnimplementedPlayersInfoGateAwayServer
 // for forward compatibility
@@ -80,6 +90,7 @@ type PlayersInfoGateAwayServer interface {
 	Post(context.Context, *PostRequest) (*PostResponse, error)
 	Put(context.Context, *PutRequest) (*PutResponse, error)
 	Drop(context.Context, *DropRequest) (*DropResponse, error)
+	Counters(context.Context, *CountersRequest) (*CountersResponse, error)
 	mustEmbedUnimplementedPlayersInfoGateAwayServer()
 }
 
@@ -98,6 +109,9 @@ func (UnimplementedPlayersInfoGateAwayServer) Put(context.Context, *PutRequest) 
 }
 func (UnimplementedPlayersInfoGateAwayServer) Drop(context.Context, *DropRequest) (*DropResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Drop not implemented")
+}
+func (UnimplementedPlayersInfoGateAwayServer) Counters(context.Context, *CountersRequest) (*CountersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Counters not implemented")
 }
 func (UnimplementedPlayersInfoGateAwayServer) mustEmbedUnimplementedPlayersInfoGateAwayServer() {}
 
@@ -184,6 +198,24 @@ func _PlayersInfoGateAway_Drop_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PlayersInfoGateAway_Counters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlayersInfoGateAwayServer).Counters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PlayersInfoGateAway/Counters",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlayersInfoGateAwayServer).Counters(ctx, req.(*CountersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PlayersInfoGateAway_ServiceDesc is the grpc.ServiceDesc for PlayersInfoGateAway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -207,7 +239,11 @@ var PlayersInfoGateAway_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Drop",
 			Handler:    _PlayersInfoGateAway_Drop_Handler,
 		},
+		{
+			MethodName: "Counters",
+			Handler:    _PlayersInfoGateAway_Counters_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "PlayersInfoService.Gateway.api",
+	Metadata: "playersInfoGateAway.proto",
 }

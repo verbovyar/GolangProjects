@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "modules/pkg/gateAwayApiPb";
 
-import "google/api/annotations.api";
+import "google/api/annotations.proto";
 
 service PlayersInfoGateAway {
   rpc GetAll(GetAllRequest) returns (GetAllResponse) {
@@ -28,7 +28,11 @@ service PlayersInfoGateAway {
       body: "*"
     };
   }
+  rpc Counters(CountersRequest) returns (CountersResponse) {}
 }
+
+message CountersRequest {}
+message CountersResponse {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // List endpoint messages

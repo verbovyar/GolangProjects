@@ -126,7 +126,7 @@ func ValidateAddRequest(name, club, nationality string, logger logging.Logger) e
 
 func ValidateDeleteRequest(id int32, logger logging.Logger) error {
 	err := validateId(id)
-	logger.Info("Validate id in update request")
+	logger.Info("Validate id in delete request")
 	if err != nil {
 		return err
 	}
