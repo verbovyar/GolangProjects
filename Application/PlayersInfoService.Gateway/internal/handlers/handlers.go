@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"context"
-	"expvar"
+	"encoding/json"
 	_ "expvar"
 	"fmt"
 	"github.com/Shopify/sarama"
@@ -12,8 +12,6 @@ import (
 	pbGoFiles2 "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/internal/utils"
 	"modules/pkg/logging"
-	"runtime"
-	"time"
 )
 
 func New(client pbGoFiles2.PlayersServiceClient, producer sarama.SyncProducer, logger logging.Logger) *Handlers {
@@ -29,27 +27,6 @@ type Handlers struct {
 	client   pbGoFiles2.PlayersServiceClient
 	producer sarama.SyncProducer
 	logger   logging.Logger
-}
-
-func (h *Handlers) Counters(context.Context, *gateAwayApiPb.CountersRequest) (*gateAwayApiPb.CountersResponse, error) {
-	goroutines := func() interface{} {
-		return runtime.NumGoroutine()
-	}
-
-	cpu := func() interface{} {
-		return runtime.NumCPU()
-	}
-
-	startTime := time.Now().UTC()
-	uptime := func() interface{} {
-		return int64(time.Since(startTime))
-	}
-
-	expvar.Publish("Goroutines", expvar.Func(goroutines))
-	expvar.Publish("Uptime", expvar.Func(uptime))
-	expvar.Publish("Cpu", expvar.Func(cpu))
-
-	return nil, nil
 }
 
 func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) (*gateAwayApiPb.GetAllResponse, error) {
@@ -92,23 +69,23 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 	}
 	h.logger.Info("Overwriting data in Add request")
 
-	response, err := h.client.Add(ctx, addRequest)
-	h.logger.Info("Get Add response")
+	request, err := json.Marshal(addRequest)
 	if err != nil {
-		fmt.Printf("add erequest error %v", err)
+		fmt.Print(err)
 	}
 
-	//TODO
 	msg := &sarama.ProducerMessage{
-		Topic:     "test2",
+		Topic:     "AddRequest",
 		Partition: -1,
-		Value:     sarama.StringEncoder("Test msg"),
+		Value:     sarama.ByteEncoder(request),
 	}
-	_, _, err = h.producer.SendMessage(msg)
+	partition, offset, err := h.producer.SendMessage(msg)
+	h.logger.Info("info about message( partition:%v, offset:%v, error:%v )", partition, offset, err)
 	if err != nil {
 		h.logger.Info("producer send msg error")
 	}
 
+	//TODO GetResponse fom consumer
 	postResponse := gateAwayApiPb.PostResponse{Id: response.Id}
 	h.logger.Info("Get Post response")
 

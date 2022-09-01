@@ -16,7 +16,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        (unknown)
-// source: google/api/httpbode.proto
+// source: google/api/httpbody.proto
 
 package httpbody
 
@@ -86,7 +86,7 @@ type HttpBody struct {
 func (x *HttpBody) Reset() {
 	*x = HttpBody{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_api_httpbode_proto_msgTypes[0]
+		mi := &file_google_api_httpbody_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -99,7 +99,7 @@ func (x *HttpBody) String() string {
 func (*HttpBody) ProtoMessage() {}
 
 func (x *HttpBody) ProtoReflect() protoreflect.Message {
-	mi := &file_google_api_httpbode_proto_msgTypes[0]
+	mi := &file_google_api_httpbody_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -112,7 +112,7 @@ func (x *HttpBody) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HttpBody.ProtoReflect.Descriptor instead.
 func (*HttpBody) Descriptor() ([]byte, []int) {
-	return file_google_api_httpbode_proto_rawDescGZIP(), []int{0}
+	return file_google_api_httpbody_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *HttpBody) GetContentType() string {
@@ -129,11 +129,11 @@ func (x *HttpBody) GetData() []byte {
 	return nil
 }
 
-var File_google_api_httpbode_proto protoreflect.FileDescriptor
+var File_google_api_httpbody_proto protoreflect.FileDescriptor
 
-var file_google_api_httpbode_proto_rawDesc = []byte{
+var file_google_api_httpbody_proto_rawDesc = []byte{
 	0x0a, 0x19, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x68, 0x74, 0x74,
-	0x70, 0x62, 0x6f, 0x64, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x67, 0x6f, 0x6f,
+	0x70, 0x62, 0x6f, 0x64, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x61, 0x70, 0x69, 0x22, 0x41, 0x0a, 0x08, 0x48, 0x74, 0x74, 0x70, 0x42,
 	0x6f, 0x64, 0x79, 0x12, 0x21, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x74,
 	0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65,
@@ -149,22 +149,22 @@ var file_google_api_httpbode_proto_rawDesc = []byte{
 }
 
 var (
-	file_google_api_httpbode_proto_rawDescOnce sync.Once
-	file_google_api_httpbode_proto_rawDescData = file_google_api_httpbode_proto_rawDesc
+	file_google_api_httpbody_proto_rawDescOnce sync.Once
+	file_google_api_httpbody_proto_rawDescData = file_google_api_httpbody_proto_rawDesc
 )
 
-func file_google_api_httpbode_proto_rawDescGZIP() []byte {
-	file_google_api_httpbode_proto_rawDescOnce.Do(func() {
-		file_google_api_httpbode_proto_rawDescData = protoimpl.X.CompressGZIP(file_google_api_httpbode_proto_rawDescData)
+func file_google_api_httpbody_proto_rawDescGZIP() []byte {
+	file_google_api_httpbody_proto_rawDescOnce.Do(func() {
+		file_google_api_httpbody_proto_rawDescData = protoimpl.X.CompressGZIP(file_google_api_httpbody_proto_rawDescData)
 	})
-	return file_google_api_httpbode_proto_rawDescData
+	return file_google_api_httpbody_proto_rawDescData
 }
 
-var file_google_api_httpbode_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_google_api_httpbode_proto_goTypes = []interface{}{
+var file_google_api_httpbody_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_google_api_httpbody_proto_goTypes = []interface{}{
 	(*HttpBody)(nil), // 0: google.api.HttpBody
 }
-var file_google_api_httpbode_proto_depIdxs = []int32{
+var file_google_api_httpbody_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -172,13 +172,13 @@ var file_google_api_httpbode_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_google_api_httpbode_proto_init() }
-func file_google_api_httpbode_proto_init() {
-	if File_google_api_httpbode_proto != nil {
+func init() { file_google_api_httpbody_proto_init() }
+func file_google_api_httpbody_proto_init() {
+	if File_google_api_httpbody_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_google_api_httpbode_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_google_api_httpbody_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*HttpBody); i {
 			case 0:
 				return &v.state
@@ -195,18 +195,18 @@ func file_google_api_httpbode_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_google_api_httpbode_proto_rawDesc,
+			RawDescriptor: file_google_api_httpbody_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_google_api_httpbode_proto_goTypes,
-		DependencyIndexes: file_google_api_httpbode_proto_depIdxs,
-		MessageInfos:      file_google_api_httpbode_proto_msgTypes,
+		GoTypes:           file_google_api_httpbody_proto_goTypes,
+		DependencyIndexes: file_google_api_httpbody_proto_depIdxs,
+		MessageInfos:      file_google_api_httpbody_proto_msgTypes,
 	}.Build()
-	File_google_api_httpbode_proto = out.File
-	file_google_api_httpbode_proto_rawDesc = nil
-	file_google_api_httpbode_proto_goTypes = nil
-	file_google_api_httpbode_proto_depIdxs = nil
+	File_google_api_httpbody_proto = out.File
+	file_google_api_httpbody_proto_rawDesc = nil
+	file_google_api_httpbody_proto_goTypes = nil
+	file_google_api_httpbody_proto_depIdxs = nil
 }

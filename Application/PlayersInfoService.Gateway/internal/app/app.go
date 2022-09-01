@@ -2,25 +2,24 @@ package app
 
 import (
 	"context"
-	"expvar"
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"io"
 	"modules/api/gateAwayApiPb"
 	"modules/config"
 	"modules/internal/handlers"
+	"modules/internal/infrastructure/counters"
 	pb "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/kafka"
 	"modules/pkg/logging"
 	"net"
 	"net/http"
-	r "runtime"
-	"time"
 )
 
 func Run(config config.Config) {
+	counters.GetCounters()
+
 	connect, err := grpc.Dial(config.PlayerInfoServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		panic(err)
@@ -53,48 +52,11 @@ func runGrpcServer(handlers *handlers.Handlers, network, hostGrpcPort string, lo
 	gateAwayApiPb.RegisterPlayersInfoGateAwayServer(grpcServer, handlers)
 	logger.Info("Registered PlayersInfo Gate Away server")
 
-	in := &gateAwayApiPb.CountersRequest{}
-	_, err = handlers.Counters(context.Background(), in)
-	if err != nil {
-		return
-	}
-
 	err = grpcServer.Serve(listener)
 	logger.Info("Serve server")
 	if err != nil {
 		fmt.Printf("serve error%v\n", err)
 	}
-}
-
-func counters(mux *http.ServeMux) {
-	goroutines := func(w http.ResponseWriter, req *http.Request) {
-		_, err := io.WriteString(w, string(rune(r.NumGoroutine())))
-		if err != nil {
-			return
-		}
-	}
-	mux.HandleFunc("goroutines", goroutines)
-
-	cpu := func(w http.ResponseWriter, req *http.Request) {
-		_, err := io.WriteString(w, string(rune(r.NumCPU())))
-		if err != nil {
-			return
-		}
-	}
-	mux.HandleFunc("cpu", cpu)
-
-	startTime := time.Now().UTC()
-	uptime := func(w http.ResponseWriter, req *http.Request) {
-		_, err := io.WriteString(w, string(rune(int64(time.Since(startTime)))))
-		if err != nil {
-			return
-		}
-	}
-	mux.HandleFunc("uptime", uptime)
-
-	mux.Handle("/stats", expvar.Handler())
-
-	http.ListenAndServe(":8080", mux)
 }
 
 func runRest(hostGrpcPort, hostRestPort string, logger logging.Logger) {
@@ -111,8 +73,6 @@ func runRest(hostGrpcPort, hostRestPort string, logger logging.Logger) {
 	if err != nil {
 		panic(err)
 	}
-
-	counters(http.NewServeMux())
 
 	err = http.ListenAndServe(hostRestPort, mux)
 	logger.Info("Listen and serve Rest")
