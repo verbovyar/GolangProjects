@@ -47,7 +47,7 @@ func main() {
 	ctx := context.Background()
 	consumer := &Consumer{}
 	for {
-		if err = client.Consume(ctx, []string{"test2"}, consumer); err != nil {
+		if err = client.Consume(ctx, []string{"AddRequest"}, consumer); err != nil {
 			log.Printf("on consume: %v", err)
 			time.Sleep(time.Second * 10)
 		}

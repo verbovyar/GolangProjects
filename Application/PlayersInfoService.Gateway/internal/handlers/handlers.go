@@ -8,10 +8,13 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/gogo/status"
 	"google.golang.org/grpc/codes"
+	"log"
 	"modules/api/gateAwayApiPb"
 	pbGoFiles2 "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/internal/utils"
 	"modules/pkg/logging"
+	"os"
+	"os/signal"
 )
 
 func New(client pbGoFiles2.PlayersServiceClient, producer sarama.SyncProducer, logger logging.Logger) *Handlers {
@@ -26,6 +29,7 @@ type Handlers struct {
 	gateAwayApiPb.UnimplementedPlayersInfoGateAwayServer
 	client   pbGoFiles2.PlayersServiceClient
 	producer sarama.SyncProducer
+	consumer sarama.Consumer
 	logger   logging.Logger
 }
 
@@ -62,14 +66,7 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	addRequest := &pbGoFiles2.AddRequest{
-		Name:        in.Name,
-		Club:        in.Club,
-		Nationality: in.Nationality,
-	}
-	h.logger.Info("Overwriting data in Add request")
-
-	request, err := json.Marshal(addRequest)
+	request, err := json.Marshal(in)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -85,7 +82,28 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 		h.logger.Info("producer send msg error")
 	}
 
-	//TODO GetResponse fom consumer
+	//TODO GetResponse from consumer
+	claim, err := h.consumer.ConsumePartition("AddRequest", 0, sarama.OffsetNewest)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt)
+
+	var response *pbGoFiles2.AddResponse
+	select {
+	case err = <-claim.Errors():
+		log.Println(err)
+	case msg := <-claim.Messages():
+		err = json.Unmarshal(msg.Value, response)
+		if err != nil {
+			return nil, err
+		}
+	case <-signals:
+		return nil, nil
+	}
+
 	postResponse := gateAwayApiPb.PostResponse{Id: response.Id}
 	h.logger.Info("Get Post response")
 

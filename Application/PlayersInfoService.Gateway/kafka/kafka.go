@@ -1,12 +1,13 @@
 package kafka
 
 import (
+	"fmt"
 	"github.com/Shopify/sarama"
 )
 
-func NewProducer() (sarama.SyncProducer, error) {
-	var brokers = []string{"127.0.0.1:9092"} //TODO move in config file
+var brokers = []string{"127.0.0.1:9092"} //TODO move in config file
 
+func NewProducer() (sarama.SyncProducer, error) {
 	conf := sarama.NewConfig()
 	conf.Producer.Partitioner = sarama.NewRandomPartitioner
 	conf.Producer.RequiredAcks = sarama.WaitForLocal
@@ -16,4 +17,14 @@ func NewProducer() (sarama.SyncProducer, error) {
 	return producer, err
 }
 
-// TODO create consumer
+func NewConsumer() sarama.Consumer {
+	conf := sarama.NewConfig()
+	conf.Consumer.Return.Errors = true
+
+	consumer, err := sarama.NewConsumer(brokers, conf)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return consumer
+}

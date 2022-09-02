@@ -9,7 +9,6 @@ import (
 	"modules/api/gateAwayApiPb"
 	"modules/config"
 	"modules/internal/handlers"
-	"modules/internal/infrastructure/counters"
 	pb "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/kafka"
 	"modules/pkg/logging"
@@ -18,7 +17,7 @@ import (
 )
 
 func Run(config config.Config) {
-	counters.GetCounters()
+	//go counters.GetCounters()
 
 	connect, err := grpc.Dial(config.PlayerInfoServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

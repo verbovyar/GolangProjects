@@ -3,16 +3,22 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/Shopify/sarama"
 	"github.com/go-telegram-bot-api/telegram-bot-api/api/apiPb"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/domain"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
+	"github.com/go-telegram-bot-api/telegram-bot-api/kafka"
 	"log"
+	"os"
+	"os/signal"
 )
 
 func New(repository interfaces.Repository) *Handlers {
 	return &Handlers{
 		repository: repository,
+		producer:   kafka.NewProducer(),
+		consumer:   kafka.NewConsumer(),
 	}
 }
 
@@ -20,6 +26,8 @@ type Handlers struct {
 	apiPb.UnimplementedPlayersServiceServer
 
 	repository interfaces.Repository
+	producer   sarama.SyncProducer
+	consumer   sarama.Consumer
 }
 
 func (s *Handlers) List(ctx context.Context, in *apiPb.ListRequest) (*apiPb.ListResponse, error) {
@@ -40,17 +48,31 @@ func (s *Handlers) List(ctx context.Context, in *apiPb.ListRequest) (*apiPb.List
 }
 
 func (s *Handlers) Add(ctx context.Context, in *apiPb.AddRequest) (*apiPb.AddResponse, error) {
-	var claim sarama.ConsumerGroupClaim
 
-	for msg := range claim.Messages() {
+	claim, err := s.consumer.ConsumePartition("AddRequest", 0, sarama.OffsetNewest)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt)
+
+	for {
 		var addRequest *apiPb.AddRequest
-		err := json.Unmarshal(msg.Value, addRequest)
-		if err != nil {
-			log.Printf("Unmarshal error: ^%v", err.Error())
-			continue
+
+		select {
+		case err = <-claim.Errors():
+			log.Println(err)
+		case msg := <-claim.Messages():
+			err = json.Unmarshal(msg.Value, addRequest)
+			if err != nil {
+				return nil, err
+			}
+		case <-signals:
+			return nil, nil
 		}
 
-		player, err := domain.NewPlayer(in.Name, in.Club, in.Nationality)
+		player, err := domain.NewPlayer(addRequest.Name, addRequest.Club, addRequest.Nationality)
 		if err != nil {
 			return nil, err
 		}
@@ -59,22 +81,18 @@ func (s *Handlers) Add(ctx context.Context, in *apiPb.AddRequest) (*apiPb.AddRes
 		if err != nil {
 			return nil, err
 		}
+		addResponse := apiPb.AddResponse{Id: int32(player.Id)}
 
-		response := apiPb.AddResponse{Id: int32(uint(player.Id))}
+		response, err := json.Marshal(addResponse)
 
-		addResponseMarshal, err := json.Marshal(response)
-		_, _, err = producer.SendMessage(&sarama.ProducerMessage{
-			Topic:     "addRequest",
+		msg := &sarama.ProducerMessage{
+			Topic:     "AddResponse",
 			Partition: -1,
-			Value:     sarama.ByteEncoder(addResponseMarshal),
-		})
-		if err != nil {
-			log.Printf("Cant pay order: %v", err)
+			Value:     sarama.ByteEncoder(response),
 		}
 
+		_, _, err = s.producer.SendMessage(msg)
 	}
-
-	return &response, nil
 }
 
 func (s *Handlers) Update(ctx context.Context, in *apiPb.UpdateRequest) (*apiPb.UpdateResponse, error) {
