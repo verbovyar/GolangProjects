@@ -32,7 +32,10 @@ func Run(config config.Config) {
 	producer, err := kafka.NewProducer()
 	logger.Info("Create new producer")
 
-	h := handlers.New(client, producer, logger)
+	consumer, err := kafka.NewConsumer()
+	logger.Info("Create new consumer")
+
+	h := handlers.New(client, producer, consumer, logger)
 	logger.Info("Create new handlers")
 
 	go runRest(config.HostGrpcPort, config.HostRestPort, logger)

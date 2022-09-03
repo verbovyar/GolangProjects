@@ -24,6 +24,7 @@ func NewProducer() sarama.SyncProducer {
 func NewConsumerGroup() sarama.ConsumerGroup {
 	conf := sarama.NewConfig()
 	conf.Consumer.Return.Errors = true
+	conf.Consumer.Offsets.Initial = sarama.OffsetNewest
 
 	consumerGroup, err := sarama.NewConsumerGroup(brokers, "startConsuming", conf)
 	if err != nil {

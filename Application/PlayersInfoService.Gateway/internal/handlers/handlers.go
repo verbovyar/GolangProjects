@@ -13,16 +13,15 @@ import (
 	pbGoFiles2 "modules/internal/infrastructure/playersInfoServiceClient/api/pbGoFiles"
 	"modules/internal/utils"
 	"modules/pkg/logging"
-	"os"
-	"os/signal"
 	"time"
 )
 
-func New(client pbGoFiles2.PlayersServiceClient, producer sarama.SyncProducer, logger logging.Logger) *Handlers {
+func New(client pbGoFiles2.PlayersServiceClient, producer sarama.SyncProducer, consumer sarama.Consumer, logger logging.Logger) *Handlers {
 	return &Handlers{
 		client:   client,
 		producer: producer,
 		logger:   logger,
+		consumer: consumer,
 	}
 }
 
@@ -60,6 +59,16 @@ func (h *Handlers) GetAll(ctx context.Context, in *gateAwayApiPb.GetAllRequest) 
 	return &getAllResponse, nil
 }
 
+type AddRequest struct {
+	Name        string `json:"name"`
+	Club        string `json:"club"`
+	Nationality string `json:"nationality"`
+}
+
+type AddResponse struct {
+	Id int32 `json:"id"`
+}
+
 func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*gateAwayApiPb.PostResponse, error) {
 	err := utils.ValidateAddRequest(in.Name, in.Club, in.Nationality, h.logger)
 	h.logger.Info("Validate Add request data")
@@ -67,7 +76,7 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	addRequest := &{
+	addRequest := &AddRequest{
 		Name:        in.Name,
 		Club:        in.Club,
 		Nationality: in.Nationality,
@@ -90,32 +99,29 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 	}
 
 	//TODO GetResponse from consumer
-	time.Sleep(time.Second * 4000)
-	claim, err := h.consumer.ConsumePartition("AddRequest", 0, sarama.OffsetNewest)
+	time.Sleep(time.Second * 2)
+	claim, err := h.consumer.ConsumePartition("AddResponse", 0, sarama.OffsetOldest)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
-
-	var response *pbGoFiles2.AddResponse
-	select {
-	case err = <-claim.Errors():
-		log.Println(err)
-	case msg := <-claim.Messages():
-		err = json.Unmarshal(msg.Value, response)
-		if err != nil {
-			return nil, err
+	var response pbGoFiles2.AddResponse
+	for {
+		select {
+		case err = <-claim.Errors():
+			log.Println(err)
+		case msg := <-claim.Messages():
+			err = json.Unmarshal(msg.Value, &response)
+			if err != nil {
+				return nil, err
+			}
 		}
-	case <-signals:
-		return nil, nil
+
+		var PostResponse *gateAwayApiPb.PostResponse
+		h.logger.Info("Get Post response")
+
+		return PostResponse, nil
 	}
-
-	postResponse := gateAwayApiPb.PostResponse{Id: response.Id}
-	h.logger.Info("Get Post response")
-
-	return &postResponse, nil
 }
 
 func (h *Handlers) Put(ctx context.Context, in *gateAwayApiPb.PutRequest) (*gateAwayApiPb.PutResponse, error) {
