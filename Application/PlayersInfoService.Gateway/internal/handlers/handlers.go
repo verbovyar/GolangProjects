@@ -15,6 +15,7 @@ import (
 	"modules/pkg/logging"
 	"os"
 	"os/signal"
+	"time"
 )
 
 func New(client pbGoFiles2.PlayersServiceClient, producer sarama.SyncProducer, logger logging.Logger) *Handlers {
@@ -66,7 +67,13 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	request, err := json.Marshal(in)
+	addRequest := &{
+		Name:        in.Name,
+		Club:        in.Club,
+		Nationality: in.Nationality,
+	}
+
+	request, err := json.Marshal(addRequest)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -77,12 +84,13 @@ func (h *Handlers) Post(ctx context.Context, in *gateAwayApiPb.PostRequest) (*ga
 		Value:     sarama.ByteEncoder(request),
 	}
 	partition, offset, err := h.producer.SendMessage(msg)
-	h.logger.Info("info about message( partition:%v, offset:%v, error:%v )", partition, offset, err)
+	h.logger.Info("info about message (partition:%v, offset:%v, error:%v)", partition, offset, err)
 	if err != nil {
 		h.logger.Info("producer send msg error")
 	}
 
 	//TODO GetResponse from consumer
+	time.Sleep(time.Second * 4000)
 	claim, err := h.consumer.ConsumePartition("AddRequest", 0, sarama.OffsetNewest)
 	if err != nil {
 		fmt.Println(err)

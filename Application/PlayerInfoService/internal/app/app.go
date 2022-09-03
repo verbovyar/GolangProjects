@@ -5,8 +5,10 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api/config"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/botService"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/handlers"
+	"github.com/go-telegram-bot-api/telegram-bot-api/internal/kafkaHandlers/addHandler"
 	"github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/interfaces"
 	repo "github.com/go-telegram-bot-api/telegram-bot-api/internal/repositories/players/db"
+	"github.com/go-telegram-bot-api/telegram-bot-api/kafka"
 	"github.com/go-telegram-bot-api/telegram-bot-api/pkg/postgres"
 	"google.golang.org/grpc"
 	"log"
@@ -16,6 +18,12 @@ import (
 func Run(config config.Config) {
 	p := postgres.New(config.ConnectionString)
 	playersRepo := repo.New(p.Pool)
+
+	producer := kafka.NewProducer()
+	consumerGroup := kafka.NewConsumerGroup()
+
+	add := addHandler.NewAddHandler(producer, playersRepo, consumerGroup)
+	go addHandler.AddClaim(add)
 
 	botService.New(playersRepo)
 	go runBot(config.ApiKey)
