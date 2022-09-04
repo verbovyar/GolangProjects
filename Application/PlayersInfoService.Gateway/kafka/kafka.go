@@ -33,3 +33,12 @@ func NewConsumerGroup() sarama.ConsumerGroup {
 
 	return consumerGroup
 }
+
+func NewConsumer() sarama.Consumer {
+	consumer, err := sarama.NewConsumer(brokers, nil)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	return consumer
+}

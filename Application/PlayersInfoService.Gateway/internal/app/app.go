@@ -32,7 +32,7 @@ func Run(config config.Config) {
 	producer, err := kafka.NewProducer()
 	logger.Info("Create new producer")
 
-	consumer, err := kafka.NewConsumer()
+	consumer := kafka.NewConsumer()
 	logger.Info("Create new consumer")
 
 	h := handlers.New(client, producer, consumer, logger)
