@@ -6,6 +6,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
 	"modules/api/gateAwayApiPb"
 	"modules/config"
 	"modules/internal/handlers"
@@ -14,10 +15,28 @@ import (
 	"modules/pkg/logging"
 	"net"
 	"net/http"
+	"os"
+	"runtime/trace"
 )
 
 func Run(config config.Config) {
 	//go counters.GetCounters()
+
+	if err := trace.Start(os.Stderr); err != nil {
+		log.Fatalf("failed to start trace: %v", err)
+	}
+	defer trace.Stop()
+
+	// create new channel of type int
+	ch := make(chan int)
+
+	// start new anonymous goroutine
+	go func() {
+		// send 42 to channel
+		ch <- 42
+	}()
+	// read from channel
+	<-ch
 
 	connect, err := grpc.Dial(config.PlayerInfoServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -38,7 +57,15 @@ func Run(config config.Config) {
 	h := handlers.New(client, producer, consumer, logger)
 	logger.Info("Create new handlers")
 
-	go runRest(config.HostGrpcPort, config.HostRestPort, logger)
+	ctx, task := trace.NewTask(context.Background(), "started run")
+	defer task.End()
+
+	go func() {
+		trace.WithRegion(ctx, "Run Rest", func() {
+			go runRest(config.HostGrpcPort, config.HostRestPort, logger)
+		})
+	}()
+
 	runGrpcServer(h, config.Network, config.HostGrpcPort, logger)
 }
 
@@ -63,8 +90,7 @@ func runGrpcServer(handlers *handlers.Handlers, network, hostGrpcPort string, lo
 
 func runRest(hostGrpcPort, hostRestPort string, logger logging.Logger) {
 	logger.Info("Started Rest")
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	mux := runtime.NewServeMux()

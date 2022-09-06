@@ -28,10 +28,10 @@ func Run(config config.Config) {
 
 	runKafka(producer, playersRepo, consumerGroup)
 
-	//botService.New(playersRepo)
-	//go runBot(config.ApiKey)
+	botService.New(playersRepo)
+	go runBot(config.ApiKey)
 
-	//runGRPCServer(playersRepo, config.Network, config.Port)
+	runGRPCServer(playersRepo, config.Network, config.Port)
 }
 
 func runBot(apiKey string) {
